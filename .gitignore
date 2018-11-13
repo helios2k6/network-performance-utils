@@ -6,6 +6,8 @@
 *.lo
 *.o
 *.obj
+*.out
+*.dSYM
 
 # Precompiled Headers
 *.gch
@@ -35,3 +37,9 @@
 x64/
 Debug/
 .vs/
+
+# VS Code Stuff
+tasks.json
+c_cpp_properties.json
+
+.DS_Store
