@@ -21,16 +21,18 @@
 
 #pragma once
 
-#include "BaseNetworkEntity.h"
+#include <string>
 
-class NetworkClient : public BaseNetworkEntity
+class NetworkClient
 {
 public:
-    explicit NetworkClient(const int);
+    explicit NetworkClient(const std::string, const int);
     ~NetworkClient();
 
-    void Start() const override;
-    void Stop() const override;
-private:
+    void ConnectToServer();
+    void DisconnectFromServer();
 
+private:
+    const std::string _serverIPAddress;
+    const int _portNumber;
 };

@@ -37,6 +37,9 @@ protected:
     explicit BaseNetworkEntity(const int);
     virtual ~BaseNetworkEntity();
 
+    const boost::asio::io_context& getIOContext() const;
+    const boost::asio::ip::tcp::socket& getSocket() const;
+
     const int _portNumber;
 private:
     // Note: The order in which these members are declared is important. Reordering this will

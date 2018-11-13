@@ -21,7 +21,10 @@
 
 #include "NetworkClient.h"
 
-NetworkClient::NetworkClient(const int portNumber) : BaseNetworkEntity(portNumber)
+NetworkClient::NetworkClient(
+    const std::string serverIPAddress,
+    const int portNumber
+) : _serverIPAddress(serverIPAddress), _portNumber(portNumber)
 {
 }
 
@@ -29,12 +32,12 @@ NetworkClient::~NetworkClient()
 {
 }
 
-void NetworkClient::Start() const
+void NetworkClient::ConnectToServer()
 {
 
 }
 
-void NetworkClient::Stop() const
+void NetworkClient::DisconnectFromServer()
 {
 
 }

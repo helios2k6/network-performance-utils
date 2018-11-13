@@ -21,7 +21,7 @@
 
 #include "NetworkServer.h"
 
-NetworkServer::NetworkServer(const int portNumber) : BaseNetworkEntity(portNumber)
+NetworkServer::NetworkServer(const int portNumber) : _portNumber(portNumber)
 {
 }
 
@@ -29,10 +29,11 @@ NetworkServer::~NetworkServer()
 {
 }
 
-void NetworkServer::Start() const
+void NetworkServer::StartListening()
 {
+
 }
 
-void NetworkServer::Stop() const
+void NetworkServer::StopListening()
 {
 }

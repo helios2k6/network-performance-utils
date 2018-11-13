@@ -21,19 +21,23 @@
 
 #pragma once
 
-#include "BaseNetworkEntity.h"
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 /**
  * Acts as the server that will monitor incoming connection requests and begin servicing
  * them
  */
-class NetworkServer : public BaseNetworkEntity
+class NetworkServer
 {
 public:
     explicit NetworkServer(const int);
     ~NetworkServer();
 
-    void Start() const override;
-    void Stop() const override;
+    void StartListening();
+    void StopListening();
 private:
+    const int _portNumber;
+    boost::asio::io_context _ioContext;
+    boost::asio::ip::tcp::acceptor _tcpAcceptor;
 };

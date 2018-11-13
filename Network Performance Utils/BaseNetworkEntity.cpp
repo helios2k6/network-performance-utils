@@ -28,3 +28,13 @@ BaseNetworkEntity::BaseNetworkEntity(const int portNumber) : _portNumber(portNum
 BaseNetworkEntity::~BaseNetworkEntity()
 {
 }
+
+const boost::asio::io_context& BaseNetworkEntity::getIOContext() const
+{
+    return this->_ioContext;
+}
+
+const boost::asio::ip::tcp::socket& BaseNetworkEntity::getSocket() const
+{
+    return this->_socket;
+}
