@@ -22,7 +22,6 @@
 #pragma once
 
 #include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
 
 /**
  * Acts as the server that will monitor incoming connection requests and begin servicing
@@ -39,5 +38,4 @@ public:
 private:
     const int _portNumber;
     boost::asio::io_context _ioContext;
-    boost::asio::ip::tcp::acceptor _tcpAcceptor;
 };
