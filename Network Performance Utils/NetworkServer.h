@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <boost/asio/io_context.hpp>
+
 /**
  * Acts as the server that will monitor incoming connection requests and begin servicing
  * them
@@ -35,4 +37,5 @@ public:
     void StopListening();
 private:
     const int _portNumber;
+    boost::asio::io_context _ioContext;
 };

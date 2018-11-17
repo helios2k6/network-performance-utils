@@ -19,7 +19,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-int main(int argc, char ** argv)
+#include "NetworkClient.h"
+#include "NetworkServer.h"
+
+int main()
 {
     return 0;
 }
