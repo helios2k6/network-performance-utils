@@ -21,10 +21,18 @@
 
 #include "NetworkClient.h"
 
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
+
+namespace
+{
+    const int kBytesToReadFromServer = 4096; // 4 kibibytes
+} // hidden namespace
+
 NetworkClient::NetworkClient(
     const std::string serverIPAddress,
     const int portNumber
-) : _serverIPAddress(serverIPAddress), _portNumber(portNumber)
+) : _serverIPAddress(serverIPAddress), _portNumber(portNumber), _shouldStayConnected(true), _shouldStayConnectedMutex()
 {
 }
 
@@ -34,10 +42,33 @@ NetworkClient::~NetworkClient()
 
 void NetworkClient::ConnectToServer()
 {
+    boost::asio::io_context ioContext;
+    boost::asio::ip::tcp::resolver resolver(ioContext);
+    boost::asio::ip::tcp::resolver::results_type endpoints =
+        resolver.resolve(this->_serverIPAddress, "Network Performance Utils - Client");
+    
+    boost::asio::ip::tcp::socket socket(ioContext);
+    boost::asio::connect(socket, endpoints);
 
+    while (true)
+    {
+        boost::array<char, kBytesToReadFromServer> buffer;
+        // Scope this check
+        {
+            std::lock_guard<std::mutex> scopedLockCheck(this->_shouldStayConnectedMutex);
+            if (this->_shouldStayConnected == false)
+            {
+                // TODO: Disconnect from the server
+                return;
+            }
+        }
+
+        // Proceed with connection to server
+    }
 }
 
 void NetworkClient::DisconnectFromServer()
 {
-
+    std::lock_guard<std::mutex> lock(this->_shouldStayConnectedMutex);
+    this->_shouldStayConnected = false;
 }

@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <mutex>
 #include <string>
 
 class NetworkClient
@@ -35,4 +36,7 @@ public:
 private:
     const std::string _serverIPAddress;
     const int _portNumber;
+
+    bool _shouldStayConnected;
+    std::mutex _shouldStayConnectedMutex;
 };
