@@ -32,8 +32,12 @@ namespace
 } // hidden namespace
 
 NetworkClient::NetworkClient(
-    const std::string serverHost
-) : _serverHost(serverHost), _shouldStayConnected(true), _shouldStayConnectedMutex()
+    const std::string& serverHost,
+    const std::string& serverPort
+) : _serverHost(serverHost),
+    _serverPort(serverPort),
+    _shouldStayConnected(true),
+    _shouldStayConnectedMutex()
 {
 }
 
@@ -46,7 +50,7 @@ void NetworkClient::ConnectToServer()
     boost::asio::io_context ioContext;
     boost::asio::ip::tcp::resolver resolver(ioContext);
     boost::asio::ip::tcp::resolver::results_type endpoints =
-        resolver.resolve(this->_serverHost, "Network Performance Utils - Client");
+        resolver.resolve(this->_serverHost, this->_serverPort);
     
     boost::asio::ip::tcp::socket socket(ioContext);
     boost::asio::connect(socket, endpoints);
@@ -59,7 +63,7 @@ void NetworkClient::ConnectToServer()
     while (true)
     {
         // Scope this check
-        {
+        { 
             std::lock_guard<std::mutex> scopedLockCheck(this->_shouldStayConnectedMutex);
             if (this->_shouldStayConnected == false)
             {

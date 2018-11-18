@@ -61,15 +61,8 @@ void HandleSigInt(int s)
     }
 }
 
-int main(int argc, char ** argv)
+void HookUpSignalHandler()
 {
-    if (argc < 3)
-    {
-        std::cout << "Usage: <this program> (server|client) (client: <server host name>) (server: <port number>)" << std::endl;;
-        return 1;
-    }
-
-    // Set up signal handling first
     struct sigaction sigIntHandler;
 
     sigIntHandler.sa_handler = HandleSigInt;
@@ -77,6 +70,17 @@ int main(int argc, char ** argv)
     sigIntHandler.sa_flags = 0;
 
     sigaction(SIGINT, &sigIntHandler, nullptr);
+}
+
+int main(int argc, char ** argv)
+{
+    if (argc < 3)
+    {
+        std::cout << "Usage: <this program> (server|client) (client: <server host> <server port number>) (server: <port number>)" << std::endl;;
+        return 1;
+    }
+
+    HookUpSignalHandler();
 
     const std::string role(argv[1]);
     if (role == "server")
@@ -93,8 +97,16 @@ int main(int argc, char ** argv)
     }
     else if (role == "client")
     {
+        if (argc < 4)
+        {
+            std::cout << "Hostname and port must be specified separately" << std::endl;
+            return 1;
+        }
+
         const std::string serverHost(argv[2]);
-        NetworkClient client(serverHost);
+        const std::string serverPort(argv[3]);
+
+        NetworkClient client(serverHost, serverPort);
         clientRef = &client;
         client.ConnectToServer();
     }

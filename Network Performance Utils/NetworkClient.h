@@ -27,7 +27,7 @@
 class NetworkClient
 {
 public:
-    explicit NetworkClient(const std::string);
+    explicit NetworkClient(const std::string&, const std::string&);
     ~NetworkClient();
 
     void ConnectToServer();
@@ -35,6 +35,7 @@ public:
 
 private:
     const std::string _serverHost;
+    const std::string _serverPort;
 
     bool _shouldStayConnected;
     std::mutex _shouldStayConnectedMutex;
