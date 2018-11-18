@@ -41,5 +41,5 @@ Debug/
 # VS Code Stuff
 tasks.json
 c_cpp_properties.json
-
+settings.json
 .DS_Store

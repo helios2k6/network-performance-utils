@@ -21,18 +21,19 @@
 
 #include "NetworkClient.h"
 
+#include <iostream>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <boost/chrono.hpp>
 
 namespace
 {
-    const int kBytesToReadFromServer = 4096; // 4 kibibytes
+    constexpr static int kBytesToReadFromServer = 4194304; // 4 mebibytes
 } // hidden namespace
 
 NetworkClient::NetworkClient(
-    const std::string serverIPAddress,
-    const int portNumber
-) : _serverIPAddress(serverIPAddress), _portNumber(portNumber), _shouldStayConnected(true), _shouldStayConnectedMutex()
+    const std::string serverHost
+) : _serverHost(serverHost), _shouldStayConnected(true), _shouldStayConnectedMutex()
 {
 }
 
@@ -45,11 +46,15 @@ void NetworkClient::ConnectToServer()
     boost::asio::io_context ioContext;
     boost::asio::ip::tcp::resolver resolver(ioContext);
     boost::asio::ip::tcp::resolver::results_type endpoints =
-        resolver.resolve(this->_serverIPAddress, "Network Performance Utils - Client");
+        resolver.resolve(this->_serverHost, "Network Performance Utils - Client");
     
     boost::asio::ip::tcp::socket socket(ioContext);
     boost::asio::connect(socket, endpoints);
 
+    // Keep track of number of bytes and how much time has passed so we can get
+    // a running speed average
+    uint64_t bytesDownloaded = 0;
+    const boost::chrono::time_point<boost::chrono::steady_clock> startTime(boost::chrono::steady_clock::now());
     while (true)
     {
         boost::array<char, kBytesToReadFromServer> buffer;
@@ -64,6 +69,28 @@ void NetworkClient::ConnectToServer()
         }
 
         // Proceed with connection to server
+        boost::array<char, kBytesToReadFromServer> buf;
+        boost::system::error_code error;
+        bytesDownloaded += socket.read_some(boost::asio::buffer(buf), error);
+        boost::chrono::time_point<boost::chrono::steady_clock> finishedDownloadTime(boost::chrono::steady_clock::now());
+        if (error == boost::asio::error::eof)
+        {
+            // Clean break from server
+            break;
+        }
+        else if (error)
+        {
+            // Some other error
+            throw boost::system::system_error(error);
+        }
+
+        const boost::chrono::seconds downloadDuration(
+            boost::chrono::duration_cast<boost::chrono::seconds>(finishedDownloadTime - startTime)
+        );
+
+        double bytesPerSecond = bytesDownloaded / downloadDuration.count();
+        std::cout << "Current speed: " << bytesPerSecond << " bytes per second." << std::endl;
+        std::cout << "Running tallys: " << bytesDownloaded << " bytes downloaded." << std::endl;
     }
 }
 

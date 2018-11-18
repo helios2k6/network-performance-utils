@@ -1,3 +1,5 @@
+#pragma once
+
 /*
  * Copyright (c) 2018 Andrew Johnson
  *
@@ -19,23 +21,20 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
 #include <mutex>
 #include <string>
 
 class NetworkClient
 {
 public:
-    explicit NetworkClient(const std::string, const int);
+    explicit NetworkClient(const std::string);
     ~NetworkClient();
 
     void ConnectToServer();
     void DisconnectFromServer();
 
 private:
-    const std::string _serverIPAddress;
-    const int _portNumber;
+    const std::string _serverHost;
 
     bool _shouldStayConnected;
     std::mutex _shouldStayConnectedMutex;
