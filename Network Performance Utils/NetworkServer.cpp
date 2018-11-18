@@ -21,7 +21,20 @@
 
 #include "NetworkServer.h"
 
-NetworkServer::NetworkServer(const int portNumber) : _portNumber(portNumber)
+#include <boost/asio.hpp>
+#include <boost/array.hpp>
+#include <algorithm>
+#include <random>
+
+namespace
+{
+    constexpr static int kBufferSize = 4194304; // 4 mebibytes
+}
+
+using RandomBytesEngine = std::independent_bits_engine<std::default_random_engine, CHAR_BIT, unsigned char>;
+
+NetworkServer::NetworkServer(const int portNumber) :
+    _portNumber(portNumber), _shouldStayConnected(true), _shouldStayConnectedMutex()
 {
 }
 
@@ -31,9 +44,41 @@ NetworkServer::~NetworkServer()
 
 void NetworkServer::StartListening()
 {
+    boost::asio::io_context ioContext;
+    boost::asio::ip::tcp::acceptor acceptor(
+        ioContext,
+        boost::asio::ip::tcp::v4(),
+        this->_portNumber
+    );
+    boost::asio::ip::tcp::socket socket(ioContext);
+    acceptor.accept(socket);
+    
+    RandomBytesEngine randomBytesEngine;
+    boost::array<char, kBufferSize> buffer;
+    while (true)
+    {
+        // Scope this check
+        {
+            std::lock_guard<std::mutex> scopedLockCheck(this->_shouldStayConnectedMutex);
+            if (this->_shouldStayConnected == false)
+            {
+                socket.close();
+                acceptor.close();
+                return;
+            }
+        }
+        
+        // Generate random bytes
+        std::generate(buffer.begin(), buffer.end(), randomBytesEngine);
 
+        // Send the data down
+        boost::system::error_code error;
+        boost::asio::write(socket, boost::asio::buffer(buffer), error);
+    }
 }
 
 void NetworkServer::StopListening()
 {
+    std::lock_guard<std::mutex> lock(this->_shouldStayConnectedMutex);
+    this->_shouldStayConnected = false;
 }

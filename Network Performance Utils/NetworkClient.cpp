@@ -54,24 +54,24 @@ void NetworkClient::ConnectToServer()
     // Keep track of number of bytes and how much time has passed so we can get
     // a running speed average
     uint64_t bytesDownloaded = 0;
+    boost::array<char, kBytesToReadFromServer> buffer;
     const boost::chrono::time_point<boost::chrono::steady_clock> startTime(boost::chrono::steady_clock::now());
     while (true)
     {
-        boost::array<char, kBytesToReadFromServer> buffer;
         // Scope this check
         {
             std::lock_guard<std::mutex> scopedLockCheck(this->_shouldStayConnectedMutex);
             if (this->_shouldStayConnected == false)
             {
-                // TODO: Disconnect from the server
+                // Close socket
+                socket.close();
                 return;
             }
         }
 
         // Proceed with connection to server
-        boost::array<char, kBytesToReadFromServer> buf;
         boost::system::error_code error;
-        bytesDownloaded += socket.read_some(boost::asio::buffer(buf), error);
+        bytesDownloaded += socket.read_some(boost::asio::buffer(buffer), error);
         boost::chrono::time_point<boost::chrono::steady_clock> finishedDownloadTime(boost::chrono::steady_clock::now());
         if (error == boost::asio::error::eof)
         {

@@ -21,7 +21,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <boost/asio/io_context.hpp>
+
+#include <mutex>
 
 /**
  * Acts as the server that will monitor incoming connection requests and begin servicing
@@ -37,5 +38,7 @@ public:
     void StopListening();
 private:
     const int _portNumber;
-    boost::asio::io_context _ioContext;
+
+    bool _shouldStayConnected;
+    std::mutex _shouldStayConnectedMutex;
 };
