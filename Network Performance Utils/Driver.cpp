@@ -56,7 +56,7 @@ void HandleSigInt(int s)
     }
     else
     {
-        std::cout << "SIGINT caught again. Shutting down immediately" << std::endl;
+        std::cout << "SIGINT caught again. Shutting down immediately." << std::endl;
         exit(1);
     }
 }
@@ -65,7 +65,7 @@ int main(int argc, char ** argv)
 {
     if (argc < 3)
     {
-        std::cout << "Usage: <this program> (server|client) (client: <server host name>) (server: <port number>)";
+        std::cout << "Usage: <this program> (server|client) (client: <server host name>) (server: <port number>)" << std::endl;;
         return 1;
     }
 
