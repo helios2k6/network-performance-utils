@@ -57,6 +57,9 @@ void NetworkServer::StartListening()
     
     RandomBytesEngine randomBytesEngine;
     boost::array<char, kBufferSize> buffer;
+    
+    // Generate random bytes ahead of time
+    std::generate(buffer.begin(), buffer.end(), randomBytesEngine);
     while (true && socket.is_open())
     {
         // Scope this check
@@ -70,9 +73,6 @@ void NetworkServer::StartListening()
             }
         }
         
-        // Generate random bytes
-        std::generate(buffer.begin(), buffer.end(), randomBytesEngine);
-
         // Send the data down
         boost::system::error_code error;
         boost::asio::write(socket, boost::asio::buffer(buffer), error);
