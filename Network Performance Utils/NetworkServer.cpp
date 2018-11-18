@@ -47,8 +47,10 @@ void NetworkServer::StartListening()
     boost::asio::io_context ioContext;
     boost::asio::ip::tcp::acceptor acceptor(
         ioContext,
-        boost::asio::ip::tcp::v4(),
-        this->_portNumber
+        boost::asio::ip::tcp::endpoint(
+            boost::asio::ip::tcp::v4(),
+            this->_portNumber
+        )
     );
     boost::asio::ip::tcp::socket socket(ioContext);
     acceptor.accept(socket);
