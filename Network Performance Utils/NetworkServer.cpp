@@ -57,7 +57,7 @@ void NetworkServer::StartListening()
     
     RandomBytesEngine randomBytesEngine;
     boost::array<char, kBufferSize> buffer;
-    while (true)
+    while (true && socket.is_open())
     {
         // Scope this check
         {
@@ -76,6 +76,10 @@ void NetworkServer::StartListening()
         // Send the data down
         boost::system::error_code error;
         boost::asio::write(socket, boost::asio::buffer(buffer), error);
+        if (error)
+        {
+            throw boost::system::system_error(error);
+        }
     }
 }
 

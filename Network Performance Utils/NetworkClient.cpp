@@ -57,7 +57,7 @@ void NetworkClient::ConnectToServer()
 
     // Keep track of number of bytes and how much time has passed so we can get
     // a running speed average
-    uint64_t bytesDownloaded = 0;
+    size_t bytesDownloaded = 0;
     boost::array<char, kBytesToReadFromServer> buffer;
     const boost::chrono::time_point<boost::chrono::steady_clock> startTime(boost::chrono::steady_clock::now());
     while (true)
@@ -92,9 +92,7 @@ void NetworkClient::ConnectToServer()
             boost::chrono::duration_cast<boost::chrono::seconds>(finishedDownloadTime - startTime)
         );
 
-        double bytesPerSecond = bytesDownloaded / downloadDuration.count();
-        std::cout << "Current speed: " << bytesPerSecond << " bytes per second." << std::endl;
-        std::cout << "Running tallys: " << bytesDownloaded << " bytes downloaded." << std::endl;
+        std::cout << bytesDownloaded << " bytes " << " / " << downloadDuration << std::endl;
     }
 }
 
